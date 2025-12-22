@@ -4,12 +4,12 @@ compatibility_date = "2024-02-08"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "SESSIONS_KV_ID" # Placeholder
+id = "8c8a2189f36f4d29a560c297b931b015" # Placeholder
 
 [[d1_databases]]
 binding = "DB"
 database_name = "keyring-db"
-database_id = "DB_ID" # Placeholder
+database_id = "dc4cfae2-3ab9-4def-8f03-1dda78e3abe2" # Placeholder
 
 [vars]
 # Add any environment variables here
