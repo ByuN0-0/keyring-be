@@ -1,0 +1,14 @@
+name = "keyring-be"
+compatibility_date = "2024-02-08"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "SESSIONS_KV_ID" # Placeholder
+
+[[d1_databases]]
+binding = "DB"
+database_name = "keyring-db"
+database_id = "DB_ID" # Placeholder
+
+[vars]
+# Add any environment variables here
