@@ -22,9 +22,9 @@ app.use(
   })
 );
 
-// Helper to hash password using Web Crypto API (SHA-256)
-async function hashPassword(password: string) {
-  const msgUint8 = new TextEncoder().encode(password);
+// Helper to hash password using Web Crypto API (SHA-256) with salt
+async function hashPassword(password: string, salt: string) {
+  const msgUint8 = new TextEncoder().encode(password + salt);
   const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -59,15 +59,24 @@ const authMiddleware = async (
 
 app.post("/auth/login", async (c) => {
   const { email, password } = await c.req.json();
-  const passwordHash = await hashPassword(password);
 
-  const user = await c.env.DB.prepare(
-    "SELECT * FROM users WHERE email = ? AND password_hash = ?"
-  )
-    .bind(email, passwordHash)
-    .first<{ id: string; name: string; email: string }>();
+  const user = await c.env.DB.prepare("SELECT * FROM users WHERE email = ?")
+    .bind(email)
+    .first<{
+      id: string;
+      name: string;
+      email: string;
+      password_hash: string;
+      salt: string;
+    }>();
 
   if (!user) return c.json({ error: "Invalid credentials" }, 401);
+
+  const passwordHash = await hashPassword(password, user.salt);
+
+  if (passwordHash !== user.password_hash) {
+    return c.json({ error: "Invalid credentials" }, 401);
+  }
 
   const sessionId = uuidv4();
   const ua = c.req.header("User-Agent");
