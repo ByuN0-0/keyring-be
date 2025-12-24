@@ -12,6 +12,14 @@ type Variables = {
   userId: string;
 };
 
+interface Session {
+  userId: string;
+  ua: string | undefined;
+  ip: string;
+  createdAt: number;
+  expiresAt: number;
+}
+
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 app.use(
@@ -43,7 +51,7 @@ const authMiddleware = async (
   const sessionData = await c.env.SESSIONS.get(sessionId);
   if (!sessionData) return c.json({ error: "Session expired" }, 401);
 
-  const session = JSON.parse(sessionData);
+  const session = JSON.parse(sessionData) as Session;
   const ua = c.req.header("User-Agent");
   const ip = c.req.header("CF-Connecting-IP") || "unknown";
 
@@ -122,17 +130,45 @@ app.get("/auth/me", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const sessionId = getCookie(c, "session_id");
   const sessionData = await c.env.SESSIONS.get(sessionId!);
-  const session = JSON.parse(sessionData!);
+  const session = JSON.parse(sessionData!) as Session;
 
   const user = await c.env.DB.prepare(
     "SELECT id, name, email FROM users WHERE id = ?"
   )
     .bind(userId)
     .first();
-  return c.json({ user, expiresAt: session.expiresAt });
+
+  const fragments = await c.env.DB.prepare(
+    "SELECT f.*, s.scope, s.scope_id FROM vault_fragments f LEFT JOIN vault_scopes s ON f.scope_pk = s.id WHERE f.user_id = ?"
+  )
+    .bind(userId)
+    .all();
+
+  const scopes = await c.env.DB.prepare(
+    "SELECT DISTINCT scope, scope_id FROM vault_scopes WHERE user_id = ? AND scope_id IS NOT NULL"
+  )
+    .bind(userId)
+    .all();
+
+  return c.json({ 
+    user, 
+    expiresAt: session.expiresAt,
+    fragments: fragments.results,
+    scopes: scopes.results
+  });
 });
 
 // Vault Routes
+app.get("/vault/scopes", authMiddleware, async (c) => {
+  const userId = c.get("userId");
+  const scopes = await c.env.DB.prepare(
+    "SELECT DISTINCT scope, scope_id FROM vault_scopes WHERE user_id = ? AND scope_id IS NOT NULL"
+  )
+    .bind(userId)
+    .all();
+  return c.json({ scopes: scopes.results });
+});
+
 app.get("/vault", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const fragments = await c.env.DB.prepare(
