@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+import crypto from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 const password = process.argv[2];
 
@@ -9,9 +9,9 @@ if (!password) {
 }
 
 const id = uuidv4();
-// Generate a random 16-character salt
+// 16진수 랜덤 salt 생성
 const salt = crypto.randomBytes(8).toString('hex');
-// Hash password + salt
+// 비밀번호 + salt 해싱
 const hash = crypto.createHash('sha256').update(password + salt).digest('hex');
 
 console.log('--- 생성된 사용자 정보 (Salt 적용됨) ---');
