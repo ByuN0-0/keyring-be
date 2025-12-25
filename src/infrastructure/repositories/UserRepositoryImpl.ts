@@ -4,7 +4,7 @@ import { User } from "../../domain/entities/User";
 import { Db } from "../db/client";
 import { users } from "../db/schema";
 
-export class D1UserRepository implements UserRepository {
+export class UserRepositoryImpl implements UserRepository {
   constructor(private db: Db) {}
 
   private mapUser(row: typeof users.$inferSelect): User {

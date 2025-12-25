@@ -5,7 +5,7 @@ import { VaultFragment } from "../../domain/entities/VaultFragment";
 import { Db } from "../db/client";
 import { vault_fragments, vault_scopes } from "../db/schema";
 
-export class D1VaultRepository implements VaultRepository {
+export class VaultRepositoryImpl implements VaultRepository {
   constructor(private db: Db) {}
 
   async getScopesByUserId(userId: string): Promise<VaultScope[]> {

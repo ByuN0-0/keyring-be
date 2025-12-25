@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { setCookie, getCookie, deleteCookie } from "hono/cookie";
 import { Bindings, Variables } from "../../../types";
-import { D1UserRepository } from "../../repositories/D1UserRepository";
+import { UserRepositoryImpl } from "../../repositories/UserRepositoryImpl";
 import { KVSessionRepository } from "../../repositories/KVSessionRepository";
-import { D1VaultRepository } from "../../repositories/D1VaultRepository";
+import { VaultRepositoryImpl } from "../../repositories/VaultRepositoryImpl";
 import { createDb } from "../../db/client";
 import { LoginUseCase } from "../../../use-cases/auth/LoginUseCase";
 import { LogoutUseCase } from "../../../use-cases/auth/LogoutUseCase";
@@ -18,7 +18,7 @@ auth.post("/login", async (c) => {
   const ip = c.req.header("CF-Connecting-IP") || "unknown";
 
   const db = createDb(c.env.DB);
-  const userRepository = new D1UserRepository(db);
+  const userRepository = new UserRepositoryImpl(db);
   const sessionRepository = new KVSessionRepository(c.env.SESSIONS);
   const loginUseCase = new LoginUseCase(userRepository, sessionRepository);
 
@@ -57,8 +57,8 @@ auth.get("/me", authMiddleware, async (c) => {
   const session = c.get("session");
 
   const db = createDb(c.env.DB);
-  const userRepository = new D1UserRepository(db);
-  const vaultRepository = new D1VaultRepository(db);
+  const userRepository = new UserRepositoryImpl(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository, vaultRepository);
 
   const result = await getCurrentUserUseCase.execute(userId, session!.expiresAt);

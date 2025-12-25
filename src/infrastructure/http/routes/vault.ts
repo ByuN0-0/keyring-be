@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { Bindings, Variables } from "../../../types";
-import { D1VaultRepository } from "../../repositories/D1VaultRepository";
+import { VaultRepositoryImpl } from "../../repositories/VaultRepositoryImpl";
 import { createDb } from "../../db/client";
 import { GetScopesUseCase } from "../../../use-cases/vault/GetScopesUseCase";
 import { CreateScopeUseCase } from "../../../use-cases/vault/CreateScopeUseCase";
@@ -20,7 +20,7 @@ vault.delete("/scopes/:id", async (c) => {
   const id = c.req.param("id");
   
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const deleteScopeUseCase = new DeleteScopeUseCase(vaultRepository);
   
   await deleteScopeUseCase.execute(userId, id);
@@ -32,7 +32,7 @@ vault.post("/scopes/reorder", async (c) => {
   const { scopeOrders } = await c.req.json();
 
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const updateScopeOrderUseCase = new UpdateScopeOrderUseCase(vaultRepository);
 
   await updateScopeOrderUseCase.execute(userId, scopeOrders);
@@ -42,7 +42,7 @@ vault.post("/scopes/reorder", async (c) => {
 vault.get("/scopes", async (c) => {
   const userId = c.get("userId");
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const getScopesUseCase = new GetScopesUseCase(vaultRepository);
 
   const scopes = await getScopesUseCase.execute(userId);
@@ -54,7 +54,7 @@ vault.post("/scopes", async (c) => {
   const { scope, scope_id } = await c.req.json();
 
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const createScopeUseCase = new CreateScopeUseCase(vaultRepository);
 
   const id = await createScopeUseCase.execute(userId, scope, scope_id);
@@ -64,7 +64,7 @@ vault.post("/scopes", async (c) => {
 vault.get("/", async (c) => {
   const userId = c.get("userId");
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const getFragmentsUseCase = new GetFragmentsUseCase(vaultRepository);
 
   const fragments = await getFragmentsUseCase.execute(userId);
@@ -76,7 +76,7 @@ vault.post("/", async (c) => {
   const { scope_uuid, key_name, encrypted_blob, salt } = await c.req.json();
 
   const db = createDb(c.env.DB);
-  const vaultRepository = new D1VaultRepository(db);
+  const vaultRepository = new VaultRepositoryImpl(db);
   const upsertFragmentUseCase = new UpsertFragmentUseCase(vaultRepository);
 
   await upsertFragmentUseCase.execute(
