@@ -1,0 +1,9 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  password_hash: string;
+  salt: string;
+}
+
+export type UserPublic = Omit<User, "password_hash" | "salt">;
