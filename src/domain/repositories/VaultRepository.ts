@@ -8,6 +8,7 @@ export interface VaultRepository {
     userId: string,
     scopeOrders: { id: string; sort_order: number }[]
   ): Promise<void>;
+  deleteScope(id: string, userId: string): Promise<void>;
   getFragmentsByUserId(userId: string): Promise<VaultFragment[]>;
   getDistinctScopesByUserId(userId: string): Promise<VaultScope[]>;
   upsertFragment(fragment: Omit<VaultFragment, "updated_at">): Promise<void>;

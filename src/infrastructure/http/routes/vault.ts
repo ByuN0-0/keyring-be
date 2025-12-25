@@ -8,10 +8,22 @@ import { UpsertFragmentUseCase } from "../../../use-cases/vault/UpsertFragmentUs
 import { authMiddleware } from "../middleware/authMiddleware";
 
 import { UpdateScopeOrderUseCase } from "../../../use-cases/vault/UpdateScopeOrderUseCase";
+import { DeleteScopeUseCase } from "../../../use-cases/vault/DeleteScopeUseCase";
 
 const vault = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 vault.use("*", authMiddleware);
+
+vault.delete("/scopes/:id", async (c) => {
+  const userId = c.get("userId");
+  const id = c.req.param("id");
+  
+  const vaultRepository = new D1VaultRepository(c.env.DB);
+  const deleteScopeUseCase = new DeleteScopeUseCase(vaultRepository);
+  
+  await deleteScopeUseCase.execute(userId, id);
+  return c.json({ success: true });
+});
 
 vault.post("/scopes/reorder", async (c) => {
   const userId = c.get("userId");

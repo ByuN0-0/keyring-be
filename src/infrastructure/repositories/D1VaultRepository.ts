@@ -30,18 +30,21 @@ export class D1VaultRepository implements VaultRepository {
       .run();
   }
 
-  async updateScopeOrder(
-    userId: string,
-    scopeOrders: { id: string; sort_order: number }[]
-  ): Promise<void> {
-    const statements = scopeOrders.map((so) =>
-      this.db
-        .prepare(
-          "UPDATE vault_scopes SET sort_order = ? WHERE id = ? AND user_id = ?"
-        )
+  async updateScopeOrder(userId: string, scopeOrders: { id: string, sort_order: number }[]): Promise<void> {
+    const statements = scopeOrders.map(so => 
+      this.db.prepare("UPDATE vault_scopes SET sort_order = ? WHERE id = ? AND user_id = ?")
         .bind(so.sort_order, so.id, userId)
     );
     await this.db.batch(statements);
+  }
+
+  async deleteScope(id: string, userId: string): Promise<void> {
+    const deleteScope = this.db.prepare("DELETE FROM vault_scopes WHERE id = ? AND user_id = ?").bind(id, userId);
+    // Delete associated fragments. scope_pk starts with scopeId + ':'
+    const deleteFragments = this.db.prepare("DELETE FROM vault_fragments WHERE user_id = ? AND scope_pk LIKE ?")
+      .bind(userId, `${id}:%`);
+    
+    await this.db.batch([deleteScope, deleteFragments]);
   }
 
   async getFragmentsByUserId(userId: string): Promise<VaultFragment[]> {
