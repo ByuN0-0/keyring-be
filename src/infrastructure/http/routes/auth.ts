@@ -1,26 +1,21 @@
 import { Hono } from "hono";
 import { setCookie, getCookie, deleteCookie } from "hono/cookie";
 import { Bindings, Variables } from "../../../types";
-import { UserRepositoryImpl } from "../../repositories/UserRepositoryImpl";
-import { KVSessionRepository } from "../../repositories/KVSessionRepository";
-import { VaultRepositoryImpl } from "../../repositories/VaultRepositoryImpl";
-import { createDb } from "../../db/client";
-import { LoginUseCase } from "../../../use-cases/auth/LoginUseCase";
-import { LogoutUseCase } from "../../../use-cases/auth/LogoutUseCase";
-import { GetCurrentUserUseCase } from "../../../use-cases/auth/GetCurrentUserUseCase";
+import { repositoryMiddleware } from "../middleware/repositoryMiddleware";
+import { useCaseMiddleware } from "../middleware/useCaseMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+auth.use("*", repositoryMiddleware);
+auth.use("*", useCaseMiddleware);
 
 auth.post("/login", async (c) => {
   const { email, password } = await c.req.json();
   const ua = c.req.header("User-Agent");
   const ip = c.req.header("CF-Connecting-IP") || "unknown";
 
-  const db = createDb(c.env.DB);
-  const userRepository = new UserRepositoryImpl(db);
-  const sessionRepository = new KVSessionRepository(c.env.SESSIONS);
-  const loginUseCase = new LoginUseCase(userRepository, sessionRepository);
+  const { loginUseCase } = c.get("useCases");
 
   try {
     const { sessionId, user, expiresAt } = await loginUseCase.execute(email, password, ua, ip);
@@ -43,8 +38,7 @@ auth.post("/login", async (c) => {
 
 auth.post("/logout", async (c) => {
   const sessionId = getCookie(c, "session_id");
-  const sessionRepository = new KVSessionRepository(c.env.SESSIONS);
-  const logoutUseCase = new LogoutUseCase(sessionRepository);
+  const { logoutUseCase } = c.get("useCases");
 
   await logoutUseCase.execute(sessionId);
   deleteCookie(c, "session_id");
@@ -56,10 +50,7 @@ auth.get("/me", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const session = c.get("session");
 
-  const db = createDb(c.env.DB);
-  const userRepository = new UserRepositoryImpl(db);
-  const vaultRepository = new VaultRepositoryImpl(db);
-  const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository, vaultRepository);
+  const { getCurrentUserUseCase } = c.get("useCases");
 
   const result = await getCurrentUserUseCase.execute(userId, session!.expiresAt);
 
