@@ -8,12 +8,14 @@
     "deploy": "wrangler deploy src/index.ts"
   },
   "dependencies": {
+    "drizzle-orm": "^0.36.0",
     "hono": "^4.11.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
     "@types/uuid": "^10.0.0",
+    "drizzle-kit": "^0.26.2",
     "wrangler": "^4.56.0"
   }
 }

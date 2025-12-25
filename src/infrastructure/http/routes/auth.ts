@@ -4,6 +4,7 @@ import { Bindings, Variables } from "../../../types";
 import { D1UserRepository } from "../../repositories/D1UserRepository";
 import { KVSessionRepository } from "../../repositories/KVSessionRepository";
 import { D1VaultRepository } from "../../repositories/D1VaultRepository";
+import { createDb } from "../../db/client";
 import { LoginUseCase } from "../../../use-cases/auth/LoginUseCase";
 import { LogoutUseCase } from "../../../use-cases/auth/LogoutUseCase";
 import { GetCurrentUserUseCase } from "../../../use-cases/auth/GetCurrentUserUseCase";
@@ -16,7 +17,8 @@ auth.post("/login", async (c) => {
   const ua = c.req.header("User-Agent");
   const ip = c.req.header("CF-Connecting-IP") || "unknown";
 
-  const userRepository = new D1UserRepository(c.env.DB);
+  const db = createDb(c.env.DB);
+  const userRepository = new D1UserRepository(db);
   const sessionRepository = new KVSessionRepository(c.env.SESSIONS);
   const loginUseCase = new LoginUseCase(userRepository, sessionRepository);
 
@@ -54,8 +56,9 @@ auth.get("/me", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const session = c.get("session");
 
-  const userRepository = new D1UserRepository(c.env.DB);
-  const vaultRepository = new D1VaultRepository(c.env.DB);
+  const db = createDb(c.env.DB);
+  const userRepository = new D1UserRepository(db);
+  const vaultRepository = new D1VaultRepository(db);
   const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepository, vaultRepository);
 
   const result = await getCurrentUserUseCase.execute(userId, session!.expiresAt);
