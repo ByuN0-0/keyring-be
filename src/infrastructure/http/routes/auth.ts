@@ -23,10 +23,12 @@ auth.post("/login", async (c) => {
   try {
     const { sessionId, user, expiresAt } = await loginUseCase.execute(email, password, ua, ip);
 
+    const isProd = c.env.NODE_ENV === "production";
+
     setCookie(c, "session_id", sessionId, {
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
+      secure: isProd,
+      sameSite: isProd ? "Strict" : "Lax",
       maxAge: 900,
       path: "/",
     });

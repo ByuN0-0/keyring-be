@@ -12,4 +12,5 @@ database_name = "keyring-db"
 database_id = "dc4cfae2-3ab9-4def-8f03-1dda78e3abe2" # Placeholder
 
 [vars]
-# Add any environment variables here
+NODE_ENV = "production"
+ALLOWED_ORIGINS = "https://keyring.biyeon.store"

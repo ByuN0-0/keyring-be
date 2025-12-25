@@ -9,10 +9,14 @@ export const createApp = () => {
 
   app.use(
     "*",
-    cors({
-      origin: ["https://keyring.biyeon.store"],
-      credentials: true,
-    })
+    async (c, next) => {
+      const allowedOrigins = c.env.ALLOWED_ORIGINS.split(",").map(o => o.trim());
+      
+      return cors({
+        origin: allowedOrigins,
+        credentials: true,
+      })(c, next);
+    }
   );
 
   app.route("/auth", authRoutes);
