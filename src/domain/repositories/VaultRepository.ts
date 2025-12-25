@@ -4,7 +4,11 @@ import { VaultFragment } from "../entities/VaultFragment";
 export interface VaultRepository {
   getScopesByUserId(userId: string): Promise<VaultScope[]>;
   createScope(scope: VaultScope): Promise<void>;
+  updateScopeOrder(
+    userId: string,
+    scopeOrders: { id: string; sort_order: number }[]
+  ): Promise<void>;
   getFragmentsByUserId(userId: string): Promise<VaultFragment[]>;
-  getDistinctScopesByUserId(userId: string): Promise<{ scope: string; scope_id: string | null }[]>;
+  getDistinctScopesByUserId(userId: string): Promise<VaultScope[]>;
   upsertFragment(fragment: Omit<VaultFragment, "updated_at">): Promise<void>;
 }

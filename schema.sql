@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS vault_scopes (
     user_id TEXT NOT NULL,
     scope TEXT CHECK(scope IN ('global', 'provider', 'project')) NOT NULL,
     scope_id TEXT, -- e.g., provider name or project id
+    sort_order INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
