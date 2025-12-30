@@ -2,9 +2,9 @@ name = "keyring-be"
 main = "src/index.ts"
 compatibility_date = "2024-02-08"
 
-[[kv_namespaces]]
-binding = "SESSIONS"
-id = "8c8a2189f36f4d29a560c297b931b015" # Placeholder
+[[durable_objects.bindings]]
+name = "SESSIONS"
+class_name = "SessionDurableObject"
 
 [[d1_databases]]
 binding = "DB"
