@@ -30,6 +30,6 @@ npm run deploy
 Bindings and vars are defined in `keyring-be/wrangler.toml`:
 
 - `DB` (D1 database)
-- `SESSIONS` (KV namespace)
+- `SESSIONS` (Durable Object)
 - `ALLOWED_ORIGINS`
 - `NODE_ENV`

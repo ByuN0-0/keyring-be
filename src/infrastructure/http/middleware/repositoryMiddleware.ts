@@ -3,7 +3,7 @@ import { Bindings, Variables } from "../../../types";
 import { createDb } from "../../db/client";
 import { UserRepositoryImpl } from "../../repositories/UserRepositoryImpl";
 import { VaultRepositoryImpl } from "../../repositories/VaultRepositoryImpl";
-import { KVSessionRepository } from "../../repositories/KVSessionRepository";
+import { DOSessionRepository } from "../../repositories/DOSessionRepository";
 
 export const repositoryMiddleware = async (
   c: Context<{ Bindings: Bindings; Variables: Variables }>,
@@ -14,7 +14,7 @@ export const repositoryMiddleware = async (
   c.set("repos", {
     userRepository: new UserRepositoryImpl(db),
     vaultRepository: new VaultRepositoryImpl(db),
-    sessionRepository: new KVSessionRepository(c.env.SESSIONS),
+    sessionRepository: new DOSessionRepository(c.env.SESSIONS),
   });
 
   await next();
