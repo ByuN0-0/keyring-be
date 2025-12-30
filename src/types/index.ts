@@ -14,7 +14,7 @@ import { UpsertFragmentUseCase } from "../use-cases/vault/UpsertFragmentUseCase"
 
 export type Bindings = {
   DB: D1Database;
-  SESSIONS: KVNamespace;
+  SESSIONS: DurableObjectNamespace;
   NODE_ENV: string;
   ALLOWED_ORIGINS: string;
 };

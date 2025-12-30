@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
 import { getCookie, deleteCookie } from "hono/cookie";
 import { Bindings, Variables } from "../../../types";
-import { KVSessionRepository } from "../../repositories/KVSessionRepository";
+import { DOSessionRepository } from "../../repositories/DOSessionRepository";
 
 export const authMiddleware = async (
   c: Context<{ Bindings: Bindings; Variables: Variables }>,
@@ -10,7 +10,7 @@ export const authMiddleware = async (
   const sessionId = getCookie(c, "session_id");
   if (!sessionId) return c.json({ error: "Unauthorized" }, 401);
 
-  const sessionRepository = new KVSessionRepository(c.env.SESSIONS);
+  const sessionRepository = new DOSessionRepository(c.env.SESSIONS);
   const session = await sessionRepository.get(sessionId);
 
   if (!session) return c.json({ error: "Session expired" }, 401);
