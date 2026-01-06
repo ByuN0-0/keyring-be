@@ -8,7 +8,7 @@ class_name = "SessionDurableObject"
 
 [[migrations]]
 tag = "v1"
-new_classes = [ "SessionDurableObject" ]
+new_sqlite_classes = [ "SessionDurableObject" ]
 
 
 [[d1_databases]]
