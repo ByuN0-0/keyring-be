@@ -1,19 +1,26 @@
 import { LoginUseCase } from "../../../use-cases/auth/LoginUseCase";
 import { LogoutUseCase } from "../../../use-cases/auth/LogoutUseCase";
 import { GetCurrentUserUseCase } from "../../../use-cases/auth/GetCurrentUserUseCase";
-import { GetScopesUseCase } from "../../../use-cases/vault/GetScopesUseCase";
-import { CreateScopeUseCase } from "../../../use-cases/vault/CreateScopeUseCase";
-import { UpdateScopeOrderUseCase } from "../../../use-cases/vault/UpdateScopeOrderUseCase";
-import { DeleteScopeUseCase } from "../../../use-cases/vault/DeleteScopeUseCase";
-import { GetFragmentsUseCase } from "../../../use-cases/vault/GetFragmentsUseCase";
-import { UpsertFragmentUseCase } from "../../../use-cases/vault/UpsertFragmentUseCase";
+
+import { GetFoldersUseCase } from "../../../use-cases/folder/GetFoldersUseCase";
+import { CreateFolderUseCase } from "../../../use-cases/folder/CreateFolderUseCase";
+import { UpdateFolderUseCase } from "../../../use-cases/folder/UpdateFolderUseCase";
+import { DeleteFolderUseCase } from "../../../use-cases/folder/DeleteFolderUseCase";
+
+import { GetSecretsUseCase } from "../../../use-cases/secret/GetSecretsUseCase";
+import { CreateSecretUseCase } from "../../../use-cases/secret/CreateSecretUseCase";
+import { UpdateSecretUseCase } from "../../../use-cases/secret/UpdateSecretUseCase";
+import { DeleteSecretUseCase } from "../../../use-cases/secret/DeleteSecretUseCase";
+
 import { SessionRepository } from "../../../domain/repositories/SessionRepository";
 import { UserRepository } from "../../../domain/repositories/UserRepository";
-import { VaultRepository } from "../../../domain/repositories/VaultRepository";
+import { FolderRepository } from "../../../domain/repositories/FolderRepository";
+import { SecretRepository } from "../../../domain/repositories/SecretRepository";
 
 type UseCaseRepositories = {
   userRepository: UserRepository;
-  vaultRepository: VaultRepository;
+  folderRepository: FolderRepository;
+  secretRepository: SecretRepository;
   sessionRepository: SessionRepository;
 };
 
@@ -22,12 +29,18 @@ export const createUseCases = (repos: UseCaseRepositories) => ({
   logoutUseCase: new LogoutUseCase(repos.sessionRepository),
   getCurrentUserUseCase: new GetCurrentUserUseCase(
     repos.userRepository,
-    repos.vaultRepository
+    repos.folderRepository,
+    repos.secretRepository
   ),
-  getScopesUseCase: new GetScopesUseCase(repos.vaultRepository),
-  createScopeUseCase: new CreateScopeUseCase(repos.vaultRepository),
-  updateScopeOrderUseCase: new UpdateScopeOrderUseCase(repos.vaultRepository),
-  deleteScopeUseCase: new DeleteScopeUseCase(repos.vaultRepository),
-  getFragmentsUseCase: new GetFragmentsUseCase(repos.vaultRepository),
-  upsertFragmentUseCase: new UpsertFragmentUseCase(repos.vaultRepository),
+  // Folders
+  getFoldersUseCase: new GetFoldersUseCase(repos.folderRepository),
+  createFolderUseCase: new CreateFolderUseCase(repos.folderRepository),
+  updateFolderUseCase: new UpdateFolderUseCase(repos.folderRepository),
+  deleteFolderUseCase: new DeleteFolderUseCase(repos.folderRepository),
+
+  // Secrets
+  getSecretsUseCase: new GetSecretsUseCase(repos.secretRepository),
+  createSecretUseCase: new CreateSecretUseCase(repos.secretRepository),
+  updateSecretUseCase: new UpdateSecretUseCase(repos.secretRepository),
+  deleteSecretUseCase: new DeleteSecretUseCase(repos.secretRepository),
 });

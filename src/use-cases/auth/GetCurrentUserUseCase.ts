@@ -1,22 +1,30 @@
 import { UserRepository } from "../../domain/repositories/UserRepository";
-import { VaultRepository } from "../../domain/repositories/VaultRepository";
+import { FolderRepository } from "../../domain/repositories/FolderRepository";
+import { SecretRepository } from "../../domain/repositories/SecretRepository";
 
 export class GetCurrentUserUseCase {
   constructor(
     private userRepository: UserRepository,
-    private vaultRepository: VaultRepository
+    private folderRepository: FolderRepository,
+    private secretRepository: SecretRepository
   ) {}
 
   async execute(userId: string, expiresAt: number) {
     const user = await this.userRepository.findById(userId);
-    const fragments = await this.vaultRepository.getFragmentsByUserId(userId);
-    const scopes = await this.vaultRepository.getDistinctScopesByUserId(userId);
+    const folders = await this.folderRepository.getFoldersByUserId(
+      userId,
+      null
+    );
+    const secrets = await this.secretRepository.getSecretsByUserId(
+      userId,
+      null
+    );
 
     return {
       user,
       expiresAt,
-      fragments,
-      scopes,
+      folders,
+      secrets,
     };
   }
 }

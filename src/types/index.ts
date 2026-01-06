@@ -1,16 +1,19 @@
 import { Session } from "../domain/entities/Session";
 import { SessionRepository } from "../domain/repositories/SessionRepository";
 import { UserRepository } from "../domain/repositories/UserRepository";
-import { VaultRepository } from "../domain/repositories/VaultRepository";
+import { FolderRepository } from "../domain/repositories/FolderRepository";
+import { SecretRepository } from "../domain/repositories/SecretRepository";
 import { LoginUseCase } from "../use-cases/auth/LoginUseCase";
 import { LogoutUseCase } from "../use-cases/auth/LogoutUseCase";
 import { GetCurrentUserUseCase } from "../use-cases/auth/GetCurrentUserUseCase";
-import { GetScopesUseCase } from "../use-cases/vault/GetScopesUseCase";
-import { CreateScopeUseCase } from "../use-cases/vault/CreateScopeUseCase";
-import { UpdateScopeOrderUseCase } from "../use-cases/vault/UpdateScopeOrderUseCase";
-import { DeleteScopeUseCase } from "../use-cases/vault/DeleteScopeUseCase";
-import { GetFragmentsUseCase } from "../use-cases/vault/GetFragmentsUseCase";
-import { UpsertFragmentUseCase } from "../use-cases/vault/UpsertFragmentUseCase";
+import { GetFoldersUseCase } from "../use-cases/folder/GetFoldersUseCase";
+import { CreateFolderUseCase } from "../use-cases/folder/CreateFolderUseCase";
+import { UpdateFolderUseCase } from "../use-cases/folder/UpdateFolderUseCase";
+import { DeleteFolderUseCase } from "../use-cases/folder/DeleteFolderUseCase";
+import { GetSecretsUseCase } from "../use-cases/secret/GetSecretsUseCase";
+import { CreateSecretUseCase } from "../use-cases/secret/CreateSecretUseCase";
+import { UpdateSecretUseCase } from "../use-cases/secret/UpdateSecretUseCase";
+import { DeleteSecretUseCase } from "../use-cases/secret/DeleteSecretUseCase";
 
 export type Bindings = {
   DB: D1Database;
@@ -24,18 +27,21 @@ export type Variables = {
   session?: Session;
   repos: {
     userRepository: UserRepository;
-    vaultRepository: VaultRepository;
+    folderRepository: FolderRepository;
+    secretRepository: SecretRepository;
     sessionRepository: SessionRepository;
   };
   useCases: {
     loginUseCase: LoginUseCase;
     logoutUseCase: LogoutUseCase;
     getCurrentUserUseCase: GetCurrentUserUseCase;
-    getScopesUseCase: GetScopesUseCase;
-    createScopeUseCase: CreateScopeUseCase;
-    updateScopeOrderUseCase: UpdateScopeOrderUseCase;
-    deleteScopeUseCase: DeleteScopeUseCase;
-    getFragmentsUseCase: GetFragmentsUseCase;
-    upsertFragmentUseCase: UpsertFragmentUseCase;
+    getFoldersUseCase: GetFoldersUseCase;
+    createFolderUseCase: CreateFolderUseCase;
+    updateFolderUseCase: UpdateFolderUseCase;
+    deleteFolderUseCase: DeleteFolderUseCase;
+    getSecretsUseCase: GetSecretsUseCase;
+    createSecretUseCase: CreateSecretUseCase;
+    updateSecretUseCase: UpdateSecretUseCase;
+    deleteSecretUseCase: DeleteSecretUseCase;
   };
 };

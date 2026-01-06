@@ -2,7 +2,8 @@ import { Context, Next } from "hono";
 import { Bindings, Variables } from "../../../types";
 import { createDb } from "../../db/client";
 import { UserRepositoryImpl } from "../../repositories/UserRepositoryImpl";
-import { VaultRepositoryImpl } from "../../repositories/VaultRepositoryImpl";
+import { FolderRepositoryImpl } from "../../repositories/FolderRepositoryImpl";
+import { SecretRepositoryImpl } from "../../repositories/SecretRepositoryImpl";
 import { DOSessionRepository } from "../../repositories/DOSessionRepository";
 
 export const repositoryMiddleware = async (
@@ -13,7 +14,8 @@ export const repositoryMiddleware = async (
 
   c.set("repos", {
     userRepository: new UserRepositoryImpl(db),
-    vaultRepository: new VaultRepositoryImpl(db),
+    folderRepository: new FolderRepositoryImpl(db),
+    secretRepository: new SecretRepositoryImpl(db),
     sessionRepository: new DOSessionRepository(c.env.SESSIONS),
   });
 

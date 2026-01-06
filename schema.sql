@@ -7,21 +7,22 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS vault_scopes (
+CREATE TABLE IF NOT EXISTS items (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
-    scope TEXT CHECK(scope IN ('global', 'provider', 'project')) NOT NULL,
-    scope_id TEXT, -- e.g., provider name or project id
-    sort_order INTEGER DEFAULT 0,
+    parent_id TEXT, -- Null for root items
+    name TEXT NOT NULL, -- Folder name or Item name
+    type TEXT NOT NULL CHECK(type IN ('FOLDER', 'ITEM')),
+    
+    encrypted_blob TEXT, -- Stores the actual secret data
+    salt TEXT, -- Global salt for this item if needed
+    
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (parent_id) REFERENCES items(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS vault_fragments (
-    scope_pk TEXT PRIMARY KEY, -- This could be the scope id or a composite key
-    user_id TEXT NOT NULL,
-    encrypted_blob TEXT NOT NULL,
-    salt TEXT NOT NULL,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+CREATE INDEX idx_items_parent ON items(parent_id);
+CREATE INDEX idx_items_user ON items(user_id);
