@@ -28,7 +28,13 @@ export class SessionDurableObject {
   private async handlePut(request: Request): Promise<Response> {
     const { session, expirationTtl } = (await request.json()) as RequestBody;
 
-    await this.state.storage.put("session", session, { expirationTtl });
+    // 1. expirationTtl 옵션 제거 (Durable Object 스토리지에서는 지원되지 않음)
+    await this.state.storage.put("session", session);
+
+    // 2. 알람을 사용하여 만료 설정 (expirationTtl은 대개 초 단위이므로 ms로 변환)
+    if (expirationTtl && expirationTtl > 0) {
+      await this.state.storage.setAlarm(Date.now() + expirationTtl * 1000);
+    }
 
     return new Response(null, { status: 204 });
   }
@@ -36,5 +42,10 @@ export class SessionDurableObject {
   private async handleDelete(): Promise<Response> {
     await this.state.storage.delete("session");
     return new Response(null, { status: 204 });
+  }
+
+  // 3. 알람이 발생했을 때 호출되는 메서드 (세션 삭제)
+  async alarm() {
+    await this.state.storage.delete("session");
   }
 }
