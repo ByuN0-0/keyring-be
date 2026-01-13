@@ -3,6 +3,7 @@ import { Bindings, Variables } from "../../../types";
 import { repositoryMiddleware } from "../middleware/repositoryMiddleware";
 import { useCaseMiddleware } from "../middleware/useCaseMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { toFolderDto } from "../dtos";
 
 const folderRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -16,7 +17,7 @@ folderRoutes.get("/", async (c) => {
 
   const { getFoldersUseCase } = c.get("useCases");
   const folders = await getFoldersUseCase.execute(userId, parentId);
-  return c.json({ folders });
+  return c.json({ folders: folders.map(toFolderDto) });
 });
 
 folderRoutes.post("/", async (c) => {

@@ -27,11 +27,7 @@ type UseCaseRepositories = {
 export const createUseCases = (repos: UseCaseRepositories) => ({
   loginUseCase: new LoginUseCase(repos.userRepository, repos.sessionRepository),
   logoutUseCase: new LogoutUseCase(repos.sessionRepository),
-  getCurrentUserUseCase: new GetCurrentUserUseCase(
-    repos.userRepository,
-    repos.folderRepository,
-    repos.secretRepository
-  ),
+  getCurrentUserUseCase: new GetCurrentUserUseCase(repos.userRepository),
   // Folders
   getFoldersUseCase: new GetFoldersUseCase(repos.folderRepository),
   createFolderUseCase: new CreateFolderUseCase(repos.folderRepository),

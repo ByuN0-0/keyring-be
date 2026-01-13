@@ -3,6 +3,7 @@ import { Bindings, Variables } from "../../../types";
 import { repositoryMiddleware } from "../middleware/repositoryMiddleware";
 import { useCaseMiddleware } from "../middleware/useCaseMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { toSecretDto } from "../dtos";
 
 const secretRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -16,7 +17,7 @@ secretRoutes.get("/", async (c) => {
 
   const { getSecretsUseCase } = c.get("useCases");
   const secrets = await getSecretsUseCase.execute(userId, folderId);
-  return c.json({ secrets });
+  return c.json({ secrets: secrets.map(toSecretDto) });
 });
 
 secretRoutes.post("/", async (c) => {

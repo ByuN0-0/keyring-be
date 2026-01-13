@@ -4,6 +4,7 @@ import { Bindings, Variables } from "../../../types";
 import { repositoryMiddleware } from "../middleware/repositoryMiddleware";
 import { useCaseMiddleware } from "../middleware/useCaseMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { toUserDto } from "../dtos";
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -18,7 +19,12 @@ auth.post("/login", async (c) => {
   const { loginUseCase } = c.get("useCases");
 
   try {
-    const { sessionId, user, expiresAt } = await loginUseCase.execute(email, password, ua, ip);
+    const { sessionId, user, expiresAt } = await loginUseCase.execute(
+      email,
+      password,
+      ua,
+      ip
+    );
 
     const isProd = c.env.NODE_ENV === "production";
 
@@ -52,9 +58,15 @@ auth.get("/me", authMiddleware, async (c) => {
 
   const { getCurrentUserUseCase } = c.get("useCases");
 
-  const result = await getCurrentUserUseCase.execute(userId, session!.expiresAt);
+  const { user, expiresAt } = await getCurrentUserUseCase.execute(
+    userId,
+    session!.expiresAt
+  );
 
-  return c.json(result);
+  return c.json({
+    user: toUserDto(user),
+    expiresAt,
+  });
 });
 
 export default auth;
