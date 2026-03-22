@@ -1,11 +1,8 @@
-import { Session } from "../domain/entities/Session";
-import { SessionRepository } from "../domain/repositories/SessionRepository";
+import { JwtPayload } from "../infrastructure/crypto/jwt";
 import { UserRepository } from "../domain/repositories/UserRepository";
 import { FolderRepository } from "../domain/repositories/FolderRepository";
 import { SecretRepository } from "../domain/repositories/SecretRepository";
 import { LoginUseCase } from "../use-cases/auth/LoginUseCase";
-import { LogoutUseCase } from "../use-cases/auth/LogoutUseCase";
-import { GetCurrentUserUseCase } from "../use-cases/auth/GetCurrentUserUseCase";
 import { GetFoldersUseCase } from "../use-cases/folder/GetFoldersUseCase";
 import { CreateFolderUseCase } from "../use-cases/folder/CreateFolderUseCase";
 import { UpdateFolderUseCase } from "../use-cases/folder/UpdateFolderUseCase";
@@ -17,24 +14,21 @@ import { DeleteSecretUseCase } from "../use-cases/secret/DeleteSecretUseCase";
 
 export type Bindings = {
   DB: D1Database;
-  SESSIONS: DurableObjectNamespace;
+  JWT_SECRET: string;
   NODE_ENV: string;
   ALLOWED_ORIGINS: string;
 };
 
 export type Variables = {
   userId: string;
-  session?: Session;
+  jwtPayload?: JwtPayload;
   repos: {
     userRepository: UserRepository;
     folderRepository: FolderRepository;
     secretRepository: SecretRepository;
-    sessionRepository: SessionRepository;
   };
   useCases: {
     loginUseCase: LoginUseCase;
-    logoutUseCase: LogoutUseCase;
-    getCurrentUserUseCase: GetCurrentUserUseCase;
     getFoldersUseCase: GetFoldersUseCase;
     createFolderUseCase: CreateFolderUseCase;
     updateFolderUseCase: UpdateFolderUseCase;

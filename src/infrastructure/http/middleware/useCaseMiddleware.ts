@@ -6,12 +6,7 @@ export const useCaseMiddleware = async (
   c: Context<{ Bindings: Bindings; Variables: Variables }>,
   next: Next
 ) => {
-  const {
-    userRepository,
-    folderRepository,
-    secretRepository,
-    sessionRepository,
-  } = c.get("repos");
+  const { userRepository, folderRepository, secretRepository } = c.get("repos");
 
   c.set(
     "useCases",
@@ -19,7 +14,6 @@ export const useCaseMiddleware = async (
       userRepository,
       folderRepository,
       secretRepository,
-      sessionRepository,
     })
   );
 

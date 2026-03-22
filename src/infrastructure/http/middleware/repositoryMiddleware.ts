@@ -4,7 +4,6 @@ import { createDb } from "../../db/client";
 import { UserRepositoryImpl } from "../../repositories/UserRepositoryImpl";
 import { FolderRepositoryImpl } from "../../repositories/FolderRepositoryImpl";
 import { SecretRepositoryImpl } from "../../repositories/SecretRepositoryImpl";
-import { DOSessionRepository } from "../../repositories/DOSessionRepository";
 
 export const repositoryMiddleware = async (
   c: Context<{ Bindings: Bindings; Variables: Variables }>,
@@ -16,7 +15,6 @@ export const repositoryMiddleware = async (
     userRepository: new UserRepositoryImpl(db),
     folderRepository: new FolderRepositoryImpl(db),
     secretRepository: new SecretRepositoryImpl(db),
-    sessionRepository: new DOSessionRepository(c.env.SESSIONS),
   });
 
   await next();
