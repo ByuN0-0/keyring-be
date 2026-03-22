@@ -16,6 +16,7 @@ export const createApp = () => {
     return cors({
       origin: allowedOrigins,
       credentials: true,
+      maxAge: 86400,
     })(c, next);
   });
 
