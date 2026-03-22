@@ -2,6 +2,14 @@ name = "keyring-be"
 main = "src/index.ts"
 compatibility_date = "2025-03-01"
 
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = [ "SessionDurableObject" ]
+
+[[migrations]]
+tag = "v2"
+deleted_classes = [ "SessionDurableObject" ]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "keyring-db"
