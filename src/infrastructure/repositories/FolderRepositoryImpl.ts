@@ -2,7 +2,7 @@ import { and, eq, isNull, sql, asc } from "drizzle-orm";
 import { FolderRepository } from "../../domain/repositories/FolderRepository";
 import { Folder } from "../../domain/entities/Folder";
 import { Db } from "../db/client";
-import { folders } from "../db/schema";
+import { folders, secrets } from "../db/schema";
 
 export class FolderRepositoryImpl implements FolderRepository {
   constructor(private db: Db) {}
@@ -83,6 +83,14 @@ export class FolderRepositoryImpl implements FolderRepository {
   async deleteFolder(id: string, userId: string): Promise<boolean> {
     const existing = await this.getFolderById(id, userId);
     if (!existing) return false;
+
+    await this.db
+      .update(secrets)
+      .set({
+        folder_id: null,
+        updated_at: sql`CURRENT_TIMESTAMP`,
+      })
+      .where(and(eq(secrets.folder_id, id), eq(secrets.user_id, userId)));
 
     await this.db
       .delete(folders)
