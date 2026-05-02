@@ -4,6 +4,7 @@ export class DeleteSecretUseCase {
   constructor(private secretRepository: SecretRepository) {}
 
   async execute(id: string, userId: string): Promise<void> {
-    await this.secretRepository.deleteSecret(id, userId);
+    const deleted = await this.secretRepository.deleteSecret(id, userId);
+    if (!deleted) throw new Error("Secret not found");
   }
 }

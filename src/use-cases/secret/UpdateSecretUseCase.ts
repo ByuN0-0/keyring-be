@@ -5,6 +5,7 @@ export class UpdateSecretUseCase {
   constructor(private secretRepository: SecretRepository) {}
 
   async execute(secret: Secret): Promise<void> {
-    await this.secretRepository.updateSecret(secret);
+    const updated = await this.secretRepository.updateSecret(secret);
+    if (!updated) throw new Error("Secret not found");
   }
 }

@@ -9,6 +9,7 @@ import { GetSecretsUseCase } from "../../../use-cases/secret/GetSecretsUseCase";
 import { CreateSecretUseCase } from "../../../use-cases/secret/CreateSecretUseCase";
 import { UpdateSecretUseCase } from "../../../use-cases/secret/UpdateSecretUseCase";
 import { DeleteSecretUseCase } from "../../../use-cases/secret/DeleteSecretUseCase";
+import { BatchUpdateSecretsUseCase } from "../../../use-cases/secret/BatchUpdateSecretsUseCase";
 
 import { UserRepository } from "../../../domain/repositories/UserRepository";
 import { FolderRepository } from "../../../domain/repositories/FolderRepository";
@@ -30,4 +31,7 @@ export const createUseCases = (repos: UseCaseRepositories) => ({
   createSecretUseCase: new CreateSecretUseCase(repos.secretRepository),
   updateSecretUseCase: new UpdateSecretUseCase(repos.secretRepository),
   deleteSecretUseCase: new DeleteSecretUseCase(repos.secretRepository),
+  batchUpdateSecretsUseCase: new BatchUpdateSecretsUseCase(
+    repos.secretRepository
+  ),
 });

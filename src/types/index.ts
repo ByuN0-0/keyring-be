@@ -11,6 +11,7 @@ import { GetSecretsUseCase } from "../use-cases/secret/GetSecretsUseCase";
 import { CreateSecretUseCase } from "../use-cases/secret/CreateSecretUseCase";
 import { UpdateSecretUseCase } from "../use-cases/secret/UpdateSecretUseCase";
 import { DeleteSecretUseCase } from "../use-cases/secret/DeleteSecretUseCase";
+import { BatchUpdateSecretsUseCase } from "../use-cases/secret/BatchUpdateSecretsUseCase";
 
 export type Bindings = {
   DB: D1Database;
@@ -37,5 +38,6 @@ export type Variables = {
     createSecretUseCase: CreateSecretUseCase;
     updateSecretUseCase: UpdateSecretUseCase;
     deleteSecretUseCase: DeleteSecretUseCase;
+    batchUpdateSecretsUseCase: BatchUpdateSecretsUseCase;
   };
 };

@@ -60,7 +60,10 @@ export class SecretRepositoryImpl implements SecretRepository {
     });
   }
 
-  async updateSecret(secret: Secret): Promise<void> {
+  async updateSecret(secret: Secret): Promise<boolean> {
+    const existing = await this.getSecretById(secret.id, secret.user_id);
+    if (!existing) return false;
+
     await this.db
       .update(secrets)
       .set({
@@ -73,11 +76,16 @@ export class SecretRepositoryImpl implements SecretRepository {
       .where(
         and(eq(secrets.id, secret.id), eq(secrets.user_id, secret.user_id))
       );
+    return true;
   }
 
-  async deleteSecret(id: string, userId: string): Promise<void> {
+  async deleteSecret(id: string, userId: string): Promise<boolean> {
+    const existing = await this.getSecretById(id, userId);
+    if (!existing) return false;
+
     await this.db
       .delete(secrets)
       .where(and(eq(secrets.id, id), eq(secrets.user_id, userId)));
+    return true;
   }
 }

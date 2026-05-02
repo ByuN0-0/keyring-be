@@ -7,6 +7,6 @@ export interface SecretRepository {
   ): Promise<Secret[]>;
   getSecretById(id: string, userId: string): Promise<Secret | null>;
   createSecret(secret: Secret): Promise<void>;
-  updateSecret(secret: Secret): Promise<void>;
-  deleteSecret(id: string, userId: string): Promise<void>;
+  updateSecret(secret: Secret): Promise<boolean>;
+  deleteSecret(id: string, userId: string): Promise<boolean>;
 }
