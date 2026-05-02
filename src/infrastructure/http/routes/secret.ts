@@ -4,7 +4,12 @@ import { repositoryMiddleware } from "../middleware/repositoryMiddleware";
 import { useCaseMiddleware } from "../middleware/useCaseMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { toSecretDto } from "../dtos";
-import { Secret } from "../../../domain/entities/Secret";
+import {
+  assertObject,
+  HttpError,
+  parseSecretPayload,
+  toHttpError,
+} from "../validation";
 
 const secretRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -23,58 +28,82 @@ secretRoutes.get("/", async (c) => {
 
 secretRoutes.post("/", async (c) => {
   const userId = c.get("userId");
-  const secretData = await c.req.json();
-
-  const { createSecretUseCase } = c.get("useCases");
-  await createSecretUseCase.execute({ ...secretData, user_id: userId });
-  return c.json({ success: true });
+  try {
+    const secretData = parseSecretPayload(await c.req.json(), userId);
+    const { createSecretUseCase } = c.get("useCases");
+    await createSecretUseCase.execute(secretData);
+    return c.json({ success: true });
+  } catch (error) {
+    const httpError = toHttpError(error);
+    return c.json({ error: httpError.message }, httpError.status);
+  }
 });
 
 secretRoutes.put("/:id", async (c) => {
   const userId = c.get("userId");
   const id = c.req.param("id");
-  const secretData = await c.req.json();
-
-  const { updateSecretUseCase } = c.get("useCases");
-  await updateSecretUseCase.execute({ ...secretData, id, user_id: userId });
-  return c.json({ success: true });
+  try {
+    const secretData = parseSecretPayload(await c.req.json(), userId);
+    const { updateSecretUseCase } = c.get("useCases");
+    await updateSecretUseCase.execute({ ...secretData, id, user_id: userId });
+    return c.json({ success: true });
+  } catch (error) {
+    const httpError = toHttpError(error);
+    return c.json({ error: httpError.message }, httpError.status);
+  }
 });
 
 secretRoutes.post("/batch", async (c) => {
   const userId = c.get("userId");
-  const body = await c.req.json();
-  const create = Array.isArray(body.create) ? body.create : [];
-  const update = Array.isArray(body.update) ? body.update : [];
-  const deleteIds = Array.isArray(body.delete) ? body.delete : [];
+  try {
+    const body = assertObject(await c.req.json());
+    const create = Array.isArray(body.create) ? body.create : [];
+    const update = Array.isArray(body.update) ? body.update : [];
+    const deleteIds = Array.isArray(body.delete) ? body.delete : [];
 
-  const mapSecret = (secret: Partial<Secret>): Secret => ({
-    id: secret.id || crypto.randomUUID(),
-    user_id: userId,
-    folder_id: secret.folder_id ?? null,
-    name: secret.name || "",
-    encrypted_blob: secret.encrypted_blob || "",
-    salt: secret.salt || "",
-  });
+    if (!Array.isArray(body.create) && body.create !== undefined) {
+      throw new HttpError(400, "create is invalid");
+    }
+    if (!Array.isArray(body.update) && body.update !== undefined) {
+      throw new HttpError(400, "update is invalid");
+    }
+    if (!Array.isArray(body.delete) && body.delete !== undefined) {
+      throw new HttpError(400, "delete is invalid");
+    }
 
-  const { batchUpdateSecretsUseCase } = c.get("useCases");
-  await batchUpdateSecretsUseCase.execute(
-    {
-      create: create.map(mapSecret),
-      update: update.map(mapSecret),
-      delete: deleteIds.filter((id): id is string => typeof id === "string"),
-    },
-    userId
-  );
-  return c.json({ success: true });
+    const { batchUpdateSecretsUseCase } = c.get("useCases");
+    await batchUpdateSecretsUseCase.execute(
+      {
+        create: create.map((item) => parseSecretPayload(item, userId)),
+        update: update.map((item) => parseSecretPayload(item, userId, true)),
+        delete: deleteIds.map((id) => {
+          if (typeof id !== "string" || id.trim() === "") {
+            throw new HttpError(400, "delete contains invalid id");
+          }
+          return id;
+        }),
+      },
+      userId
+    );
+    return c.json({ success: true });
+  } catch (error) {
+    const httpError = toHttpError(error);
+    return c.json({ error: httpError.message }, httpError.status);
+  }
 });
 
 secretRoutes.delete("/:id", async (c) => {
   const userId = c.get("userId");
   const id = c.req.param("id");
 
-  const { deleteSecretUseCase } = c.get("useCases");
-  await deleteSecretUseCase.execute(id, userId);
-  return c.json({ success: true });
+  try {
+    const { deleteSecretUseCase } = c.get("useCases");
+    await deleteSecretUseCase.execute(id, userId);
+    return c.json({ success: true });
+  } catch (error) {
+    const httpError = toHttpError(error);
+    return c.json({ error: httpError.message }, httpError.status);
+  }
 });
 
 export default secretRoutes;

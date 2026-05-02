@@ -7,6 +7,6 @@ export interface FolderRepository {
   ): Promise<Folder[]>;
   getFolderById(id: string, userId: string): Promise<Folder | null>;
   createFolder(folder: Folder): Promise<void>;
-  updateFolder(folder: Folder): Promise<void>;
-  deleteFolder(id: string, userId: string): Promise<void>;
+  updateFolder(folder: Partial<Folder> & { id: string; user_id: string }): Promise<boolean>;
+  deleteFolder(id: string, userId: string): Promise<boolean>;
 }

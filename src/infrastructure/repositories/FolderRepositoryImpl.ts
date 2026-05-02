@@ -60,7 +60,12 @@ export class FolderRepositoryImpl implements FolderRepository {
     });
   }
 
-  async updateFolder(folder: Folder): Promise<void> {
+  async updateFolder(
+    folder: Partial<Folder> & { id: string; user_id: string }
+  ): Promise<boolean> {
+    const existing = await this.getFolderById(folder.id, folder.user_id);
+    if (!existing) return false;
+
     await this.db
       .update(folders)
       .set({
@@ -72,11 +77,16 @@ export class FolderRepositoryImpl implements FolderRepository {
       .where(
         and(eq(folders.id, folder.id), eq(folders.user_id, folder.user_id))
       );
+    return true;
   }
 
-  async deleteFolder(id: string, userId: string): Promise<void> {
+  async deleteFolder(id: string, userId: string): Promise<boolean> {
+    const existing = await this.getFolderById(id, userId);
+    if (!existing) return false;
+
     await this.db
       .delete(folders)
       .where(and(eq(folders.id, id), eq(folders.user_id, userId)));
+    return true;
   }
 }
