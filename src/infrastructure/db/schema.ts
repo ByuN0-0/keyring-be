@@ -34,3 +34,15 @@ export const secrets = sqliteTable("secrets", {
 }, (table) => [
   index("idx_secrets_user_folder").on(table.user_id, table.folder_id),
 ]);
+
+export const loginAttempts = sqliteTable("login_attempts", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull(),
+  ip: text("ip").notNull(),
+  failed_count: integer("failed_count").notNull().default(0),
+  locked_until: integer("locked_until"),
+  created_at: integer("created_at").notNull(),
+  updated_at: integer("updated_at").notNull(),
+}, (table) => [
+  uniqueIndex("idx_login_attempts_email_ip").on(table.email, table.ip),
+]);
